@@ -1,5 +1,6 @@
 package com.mayank.astrotracker.scheduler;
 
+import com.mayank.astrotracker.entity.AstronomicalEvent;
 import com.mayank.astrotracker.external.NasaApiClient;
 import com.mayank.astrotracker.repository.AstronomicalEventRepository;
 import com.mayank.astrotracker.service.NotificationService;
@@ -11,6 +12,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDateTime;
 
 @Component
 @Slf4j
@@ -35,17 +38,31 @@ public class EventScheduler {
             String date = json.get("date").asText();
             String explanation = json.get("explanation").asText();
 
+            log.info("NASA Event Title: {}", title);
+
             boolean exists = eventRepository.findByTitle(title).isPresent();
             if (exists) {
                 log.info("Event already exists");
                 return;
             }
 
+            AstronomicalEvent event = new AstronomicalEvent();
+            event.setTitle(title);
+            event.setEventType("NASA_APOD");
+            event.setSource("NASA");
+            event.setVisibilityInfo(explanation);
+            event.setStartTime(LocalDateTime.now());
+            event.setEndTime(LocalDateTime.now().plusDays(1));
+
+            AstronomicalEvent savedEvent = eventRepository.save(event);
+            log.info("Saved new event with id {}", savedEvent.getId());
+
+            String eventType = "METEOR_SHOWER";
             var subscribers = subscriptionService.getSubscribers(eventType);
             log.info("Found {} subscribers", subscribers.size());
 
             subscribers.forEach(sub -> notificationService.sendEmail(sub.getEmail(),
-                    "Upcoming event detected: " + eventType));
+                    "Upcoming event detected: " + savedEvent.getTitle()));
         }
         catch (Exception e) {
             log.error("Failed to fetch NASA data", e);
