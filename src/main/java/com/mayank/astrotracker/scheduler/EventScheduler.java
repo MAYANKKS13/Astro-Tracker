@@ -1,8 +1,11 @@
 package com.mayank.astrotracker.scheduler;
 
+import com.mayank.astrotracker.dto.EventResponse;
+import com.mayank.astrotracker.dto.LiveEventMessage;
 import com.mayank.astrotracker.entity.AstronomicalEvent;
 import com.mayank.astrotracker.external.NasaApiClient;
 import com.mayank.astrotracker.repository.AstronomicalEventRepository;
+import com.mayank.astrotracker.service.EventPublisherService;
 import com.mayank.astrotracker.service.NotificationService;
 import com.mayank.astrotracker.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ public class EventScheduler {
     private final SubscriptionService subscriptionService;
     private final NotificationService notificationService;
     private final AstronomicalEventRepository eventRepository;
+    private final EventPublisherService eventPublisherService;
 
     @Scheduled(fixedRate = 60000)
     public void fetchEvents() {
@@ -63,6 +67,18 @@ public class EventScheduler {
 
                 AstronomicalEvent savedEvent = eventRepository.save(event);
                 log.info("Saved new event with id {}", savedEvent.getId());
+
+                LiveEventMessage eventMessage = LiveEventMessage.builder()
+                        .id(savedEvent.getId())
+                        .eventType(savedEvent.getEventType())
+                        .title(savedEvent.getTitle())
+                        .source(savedEvent.getSource())
+                        .visibilityInfo(savedEvent.getVisibilityInfo())
+                        .detectedAt(LocalDateTime.now())
+                        .build();
+
+                eventPublisherService.publishEvent(eventMessage);
+
 
                 String eventType = "ASTEROID_CLOSE_APPROACH";
                 var subscribers = subscriptionService.getSubscribers(eventType);
