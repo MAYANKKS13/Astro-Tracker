@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
@@ -28,41 +29,49 @@ public class EventScheduler {
     @Scheduled(fixedRate = 60000)
     public void fetchEvents() {
         try {
-            String apiData = nasaApiClient.fetchData();
+            String apiData = nasaApiClient.fetchAsteroidEvents();
             log.info("NASA API Data: {}", apiData);
 
             ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(apiData);
+            log.info("NASA Response: {}", json.toPrettyString());
 
-            String title = json.get("title").asText();
-            String date = json.get("date").asText();
-            String explanation = json.get("explanation").asText();
+            JsonNode nearEarthObjects = json.get("near_earth_objects");
+            JsonNode  todayEvents = nearEarthObjects.elements().next();
 
-            log.info("NASA Event Title: {}", title);
+            for (JsonNode todayEvent : todayEvents) {
+                String name = todayEvent.get("name").asText();
+                JsonNode approachData = todayEvent.get("close_approach_data").get(0);
+                String date = approachData.get("close_approach_date").asText();
+                String distance = approachData.get("miss_distance").get("kilometers").asText();
 
-            boolean exists = eventRepository.findByTitle(title).isPresent();
-            if (exists) {
-                log.info("Event already exists");
-                return;
+                log.info("NASA Event Title: {}", name);
+
+                boolean exists = eventRepository.findByTitle(name).isPresent();
+                if (exists) {
+                    log.info("Event already exists");
+                    continue;
+                }
+
+                AstronomicalEvent event = new AstronomicalEvent();
+                event.setTitle(name);
+                event.setEventType("ASTEROID_CLOSE_APPROACH");
+                event.setSource("NASA");
+                event.setVisibilityInfo("Missed distance: " + distance + " km");
+                event.setStartTime(LocalDate.parse(date).atStartOfDay());
+                event.setEndTime(LocalDate.parse(date).atStartOfDay().plusHours(1));
+
+                AstronomicalEvent savedEvent = eventRepository.save(event);
+                log.info("Saved new event with id {}", savedEvent.getId());
+
+                String eventType = "ASTEROID_CLOSE_APPROACH";
+                var subscribers = subscriptionService.getSubscribers(eventType);
+                log.info("Found {} subscribers", subscribers.size());
+
+                subscribers.forEach(sub -> notificationService.sendEmail(sub.getEmail(),
+                        "Upcoming event detected: " + savedEvent.getTitle()));
+
             }
-
-            AstronomicalEvent event = new AstronomicalEvent();
-            event.setTitle(title);
-            event.setEventType("NASA_APOD");
-            event.setSource("NASA");
-            event.setVisibilityInfo(explanation);
-            event.setStartTime(LocalDateTime.now());
-            event.setEndTime(LocalDateTime.now().plusDays(1));
-
-            AstronomicalEvent savedEvent = eventRepository.save(event);
-            log.info("Saved new event with id {}", savedEvent.getId());
-
-            String eventType = "METEOR_SHOWER";
-            var subscribers = subscriptionService.getSubscribers(eventType);
-            log.info("Found {} subscribers", subscribers.size());
-
-            subscribers.forEach(sub -> notificationService.sendEmail(sub.getEmail(),
-                    "Upcoming event detected: " + savedEvent.getTitle()));
         }
         catch (Exception e) {
             log.error("Failed to fetch NASA data", e);
