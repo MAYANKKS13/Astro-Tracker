@@ -10,4 +10,10 @@ public interface AstronomicalEventService {
 
     List<EventResponse> getAllEvents();
 
+    EventResponse getEventById(Long id);
+
+    List<EventResponse> getEventsByType(String eventType);
+
+    void deleteEvent(Long id);
+
 }

@@ -27,4 +27,21 @@ public class AstronomicalEventController {
         return eventService.getAllEvents();
     }
 
+    @GetMapping("/{id}")
+    public EventResponse getEventById(@PathVariable Long id) {
+        return eventService.getEventById(id);
+    }
+
+    @GetMapping("/type/{eventType}")
+    public List<EventResponse> getEventsByType(@PathVariable String eventType) {
+        return eventService.getEventsByType(eventType);
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteEventById(@PathVariable Long id) {
+        eventService.deleteEvent(id);
+        return "Event deleted successfully";
+    }
+
+
 }

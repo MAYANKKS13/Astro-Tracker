@@ -39,6 +39,31 @@ public class AstronomicalEventServiceImpl implements AstronomicalEventService {
                 .toList();
     }
 
+    @Override
+    public EventResponse getEventById(Long id) {
+
+        AstronomicalEvent event = eventRepository.findById(id).orElseThrow(() -> new RuntimeException("Event not found with id: " + id));
+        return mapToResponse(event);
+    }
+
+    @Override
+    public List<EventResponse> getEventsByType(String eventType) {
+
+        return eventRepository.findByEventType(eventType).stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public void deleteEvent(Long id) {
+
+        if(!eventRepository.existsById(id)) {
+            throw new RuntimeException("Event not found with id: " + id);
+        }
+        eventRepository.deleteById(id);
+
+    }
+
     private EventResponse mapToResponse(AstronomicalEvent event) {
         return EventResponse.builder()
                 .id(event.getId())
