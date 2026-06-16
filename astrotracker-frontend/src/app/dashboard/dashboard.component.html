@@ -1,0 +1,29 @@
+<h1>
+🌌 Astro Tracker Live Events
+</h1>
+
+
+<div *ngFor="let event of events">
+
+<h2>
+{{event.title}}
+</h2>
+
+<p>
+Event Type:
+{{event.eventType}}
+</p>
+
+<p>
+Start Time:
+{{event.startTime}}
+</p>
+
+<p>
+Visibility:
+{{event.visibilityInfo}}
+</p>
+
+<hr>
+
+</div>
