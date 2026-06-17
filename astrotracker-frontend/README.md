@@ -1,27 +1,152 @@
-# AstrotrackerFrontend
+# Astro Tracker Frontend 🚀
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.0.
+Angular frontend application for displaying real-time astronomical events.
 
-## Development server
+The frontend communicates with Spring Boot backend using REST APIs and WebSockets.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+---
 
-## Code scaffolding
+## Technology Stack
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+* Angular
+* TypeScript
+* STOMP Client
+* SockJS
 
-## Build
+---
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Features
 
-## Running unit tests
+* Real-time astronomical event dashboard
+* WebSocket based live updates
+* Display incoming events
+* Connect with backend REST APIs
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+---
 
-## Running end-to-end tests
+## Application Flow
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```
+Angular Dashboard
 
-## Further help
+        |
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+        |
+
+GET /events
+
+        |
+
+Load existing events
+
+
+        +
+
+        |
+
+WebSocket Connection
+
+        |
+
+Receive new events instantly
+
+```
+
+---
+
+## WebSocket Configuration
+
+Backend endpoint:
+
+```
+ws://localhost:8080/ws
+```
+
+Subscription topic:
+
+```
+/topic/events
+```
+
+---
+
+## Project Structure
+
+```
+src/app
+
+
+├── dashboard
+
+│       Display events
+
+
+├── service
+
+│       WebSocket communication
+
+
+├── models
+
+│       Event models
+
+
+```
+
+---
+
+## Running Frontend
+
+Install dependencies:
+
+```
+npm install
+```
+
+Start application:
+
+```
+ng serve
+```
+
+Frontend runs on:
+
+```
+http://localhost:4200
+```
+
+---
+
+## Real-Time Updates
+
+When backend detects a new astronomical event:
+
+```
+NASA API
+
+    |
+
+Backend Scheduler
+
+    |
+
+WebSocket
+
+    |
+
+Angular Dashboard
+
+```
+
+The dashboard automatically updates without refreshing the page.
+
+---
+
+## Future Improvements
+
+* Angular Material UI
+* Event search
+* Event filtering
+* Event categories
+* Charts and visualizations
+* Interactive astronomy maps
