@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AstronomicalEvent } from '../model/astronomical-event';
+import { EventService } from '../service/event.service';
 import { WebsocketService } from '../service/websocket.service';
 
 @Component({
@@ -9,21 +11,33 @@ import { WebsocketService } from '../service/websocket.service';
 export class DashboardComponent implements OnInit {
 
 
-  events:any[] = [];
+  events:AstronomicalEvent[]=[];
 
 
   constructor(
-    private websocketService: WebsocketService
+    private websocketService: WebsocketService,
+    private eventService:EventService
   ){}
 
 
   ngOnInit(): void {
 
-    this.websocketService.connect((event:any)=>{
+    this.eventService.getAllEvents()
+    .subscribe(data=>{
+
+        console.log("Existing events:",data);
+
+        this.events=data;
+
+    });
+
+    this.websocketService.connect((event:AstronomicalEvent)=>{
 
       console.log("Event received:", event);
 
-      this.events.push(event);
+      if(!this.events.some(e=> e.id === event.id)) {
+        this.events.push(event);
+      }
 
     });
 
