@@ -1,30 +1,119 @@
 <mat-toolbar color="primary">
 
-  🌌 Astro Tracker Dashboard
+🌌 Astro Tracker Dashboard
 
 </mat-toolbar>
+
 
 
 <div class="dashboard-container">
 
 
+
 <h2>
-  Live Astronomical Events
+Live Astronomical Events
 </h2>
 
+
+
+<div class="stats-container">
+
+
+<mat-card>
+
+<mat-card-title>
+Total Events
+</mat-card-title>
+
+<h1>
+{{totalEvents}}
+</h1>
+
+</mat-card>
+
+
+
+<mat-card>
+
+<mat-card-title>
+Event Types
+</mat-card-title>
+
+<h1>
+{{totalEventTypes}}
+</h1>
+
+</mat-card>
+
+
+<mat-card>
+
+<mat-card-title>
+Sources
+</mat-card-title>
+
+<h1>
+{{sources.length}}
+</h1>
+
 <p>
-    Total Events: {{events.length}}
+{{sources.join(', ')}}
 </p>
 
-<div class="events-grid">
-
-    <app-event-card
-        *ngFor="let event of events"
-        [event]="event">
-    </app-event-card>
+</mat-card>
 
 
 </div>
+
+
+
+
+
+<h3>
+Filter Events
+</h3>
+
+
+
+<div class="filter-buttons">
+
+
+<button
+mat-raised-button
+*ngFor="let filter of filters"
+(click)="changeFilter(filter)">
+
+{{filter}}
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+<h2>
+Events
+</h2>
+
+
+
+
+<div class="events-grid">
+
+
+<app-event-card
+*ngFor="let event of filteredEvents"
+[event]="event">
+
+</app-event-card>
+
+
+</div>
+
 
 
 </div>
