@@ -37,6 +37,11 @@ public class AstronomicalEventController {
         return eventService.getEventsByType(eventType);
     }
 
+    @GetMapping("/latest")
+    public List<EventResponse> getLatestEvents(@RequestParam(defaultValue = "20") int limit) {
+        return eventService.getLatestEvents(limit);
+    }
+
     @DeleteMapping("/{id}")
     public String deleteEventById(@PathVariable Long id) {
         eventService.deleteEvent(id);

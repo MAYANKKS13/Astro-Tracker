@@ -19,9 +19,9 @@ constructor(
 
 
 
-getAllEvents():Observable<AstronomicalEvent[]>{
+getLatestEvents():Observable<AstronomicalEvent[]>{
 
- return this.http.get<AstronomicalEvent[]>(this.apiUrl);
+ return this.http.get<AstronomicalEvent[]>(`${this.apiUrl}/latest?limit=20`);
 
 }
 

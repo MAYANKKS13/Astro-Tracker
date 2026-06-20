@@ -1,29 +1,30 @@
-<h1>
-🌌 Astro Tracker Live Events
-</h1>
+<mat-toolbar color="primary">
+
+  🌌 Astro Tracker Dashboard
+
+</mat-toolbar>
 
 
-<div *ngFor="let event of events">
+<div class="dashboard-container">
+
 
 <h2>
-{{event.title}}
+  Live Astronomical Events
 </h2>
 
 <p>
-Event Type:
-{{event.eventType}}
+    Total Events: {{events.length}}
 </p>
 
-<p>
-Start Time:
-{{event.startTime}}
-</p>
+<div class="events-grid">
 
-<p>
-Visibility:
-{{event.visibilityInfo}}
-</p>
+    <app-event-card
+        *ngFor="let event of events"
+        [event]="event">
+    </app-event-card>
 
-<hr>
+
+</div>
+
 
 </div>

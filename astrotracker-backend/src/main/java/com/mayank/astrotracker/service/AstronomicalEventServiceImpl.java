@@ -8,6 +8,7 @@ import com.mayank.astrotracker.entity.User;
 import com.mayank.astrotracker.repository.AstronomicalEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -62,6 +63,13 @@ public class AstronomicalEventServiceImpl implements AstronomicalEventService {
         }
         eventRepository.deleteById(id);
 
+    }
+
+    @Override
+    public List<EventResponse> getLatestEvents(int limit) {
+        return eventRepository.findAllByOrderByStartTimeDesc(PageRequest.of(0, limit)).stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     private EventResponse mapToResponse(AstronomicalEvent event) {

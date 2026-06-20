@@ -16,4 +16,6 @@ public interface AstronomicalEventService {
 
     void deleteEvent(Long id);
 
+    List<EventResponse> getLatestEvents(int limit);
+
 }

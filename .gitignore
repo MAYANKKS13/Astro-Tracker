@@ -1,0 +1,5 @@
+# IntelliJ IDEA
+.idea/
+
+# Spring Boot config
+astrotracker-backend/src/main/resources/application.properties
